@@ -80,8 +80,9 @@ def get_restaurants(request):
         },
         status=status.HTTP_200_OK,
     )
-
-
+'''
+kmkmkmk
+'''
 @api_view(["PATCH"])
 def create_restaurant(request):
     serializer = RestaurantSerializer(data=request.data)
