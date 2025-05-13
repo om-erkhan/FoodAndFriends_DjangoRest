@@ -15,23 +15,24 @@
 
 from django.db import models
 
+from django.conf import settings
+
 
 class Restaurant(models.Model):
     class Ambience(models.TextChoices):
-        CASUAL = "casual", "Casual"
-        FAMILY = "family", "Family"
-        FINE_DINING = "fine_dining", "Fine Dining"
-        OUTDOOR = "outdoor", "Outdoor"
-        ROMANTIC = "romantic", "Romantic"
+        CASUAL = "CASUAL"
+        FAMILY = "FAMILY"
+        OUTDOOR = "OUTDOOR"
+        ROMANTIC = "ROMANTIC"
 
     class Delivery(models.TextChoices):
-        NONE = "none", "No Delivery"
-        IN_HOUSE = "in_house", "In-House Delivery"
+        NONE = "NONE"
+        IN_HOUSE = "IN_HOUSE"
 
     class CuisinePreferences(models.TextChoices):
-        JAPENESE = "Japenese", "japenese"
-        CHINESE = "Chinese", "chinese"
-        DESI = "Desi", "desi"
+        JAPENESE = "JAPENESE"
+        CHINESE = "CHINESE"
+        DESI = "DESI"
 
     name = models.CharField(max_length=250)
     address = models.CharField(max_length=250)
@@ -56,3 +57,14 @@ class Restaurant(models.Model):
         choices=CuisinePreferences.choices,
         default=CuisinePreferences.JAPENESE,
     )
+
+
+class SpinHistory(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    selected_restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    spin_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} spun and got {self.selected_restaurant.name}"
+
+ 

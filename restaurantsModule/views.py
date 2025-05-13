@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from .models import Restaurant
+from .models import Restaurant, SpinHistory
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import RestaurantSerializer
+from .serializers import RestaurantSerializer, SpinHistorySerializer
 import math
 
 from authApis.models import CreateProfileModel
@@ -80,10 +80,9 @@ def get_restaurants(request):
         },
         status=status.HTTP_200_OK,
     )
-'''
-kmkmkmk
-'''
-@api_view(["PATCH"])
+
+
+@api_view(["POST"])
 def create_restaurant(request):
     serializer = RestaurantSerializer(data=request.data)
     if serializer.is_valid():
@@ -175,3 +174,121 @@ def update_or_delete_restaurant(request, restaurant_id):
             },
             status=status.HTTP_204_NO_CONTENT,
         )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def get_questionaire_result(request):
+    user = request.user
+
+    if not user.is_authenticated:
+        return Response(
+            {
+                "status": {"code": 401, "success": False},
+                "data": None,
+                "error": {"location": "User not authenticated."},
+                "message": "User is not authenticated.",
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    preferences = request.data.get("preferences")
+    delivery = request.data.get("delivery")
+    ambience = request.data.get("ambience")
+
+    filter_kwargs = {}
+    if preferences:
+        filter_kwargs["preferences"] = preferences.upper()
+    if delivery:
+        filter_kwargs["delivery"] = delivery.upper()
+    if ambience:
+        filter_kwargs["ambience"] = ambience.upper()
+
+    restaurants = Restaurant.objects.filter(**filter_kwargs)
+
+    serializer = RestaurantSerializer(restaurants, many=True)
+    return Response(
+        {
+            "status": {"code": 200, "success": True},
+            "data": serializer.data,
+            "error": None,
+            "message": "Restaurants fetched successfully.",
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def save_spin_result(request, restaurant_id):
+    user = request.user
+
+    if not restaurant_id:
+        return Response(
+            {
+                "status": {"code": 400, "success": False},
+                "data": None,
+                "error": {"location": "restaurant_id is required."},
+                "message": "Restaurant ID is missing.",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        restaurant = Restaurant.objects.get(id=restaurant_id)
+    except Restaurant.DoesNotExist:
+        return Response(
+            {
+                "status": {"code": 404, "success": False},
+                "data": None,
+                "error": {"location": "restaurant_id"},
+                "message": "Restaurant not found.",
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    spin = SpinHistory.objects.create(user=user, selected_restaurant=restaurant)
+
+    return Response(
+        {
+            "status": {"code": 201, "success": True},
+            "data": {
+                "spin_id": spin.id,
+                "restaurant": restaurant.name,
+                "spin_time": spin.spin_time,
+            },
+            "error": None,
+            "message": "Spin result saved successfully.",
+        },
+        status=status.HTTP_201_CREATED,
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_spin_history(request):
+    user = request.user
+
+    if not user.is_authenticated:
+        return Response(
+            {
+                "status": {"code": 401, "success": False},
+                "data": None,
+                "error": {"location": "User not authenticated."},
+                "message": "User is not authenticated.",
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    spins = SpinHistory.objects.filter(user=user).order_by("-spin_time")
+
+    serializer = SpinHistorySerializer(spins, many=True)
+    return Response(
+        {
+            "status": {"code": 200, "success": True},
+            "data": serializer.data,
+            "error": None,
+            "message": "Spin history fetched successfully.",
+        },
+        status=status.HTTP_200_OK,
+    )

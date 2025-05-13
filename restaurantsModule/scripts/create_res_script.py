@@ -1,37 +1,35 @@
-from restaurantsModule.models import Restaurant
-
 import random
-
+from restaurantsModule.models import Restaurant
 
 def create_restaurants():
     names = [
-        "Tasty Bites",
-        "Food Haven",
-        "Flavor Town",
-        "Spicy Spoon",
-        "Urban Dine",
-        "The Grub Spot",
-        "Bistro Bliss",
-        "Golden Plate",
-        "Feast House",
-        "Yummy Yard",
+        "Tasty Bites", "Food Haven", "Flavor Town", "Spicy Spoon", "Urban Dine",
+        "The Grub Spot", "Bistro Bliss", "Golden Plate", "Feast House", "Yummy Yard"
     ]
+    
+    ambiences = [choice[0] for choice in Restaurant.Ambience.choices]
+    deliveries = [choice[0] for choice in Restaurant.Delivery.choices]
+    preferences = [choice[0] for choice in Restaurant.CuisinePreferences.choices]
 
-    addresses = [f"{i} Main Street, Cityville" for i in range(1, 11)]
-    phone_numbers = [f"12345678{i:02}" for i in range(10)]
-    emails = [f"contact{i}@restaurant.com" for i in range(10)]
-    bussiness_names = [f"Business {i}" for i in range(10)]
+    for i in range(50):
+        name = f"{random.choice(names)} #{i+1}"
+        address = f"{random.randint(1, 999)} Main Street, Cityville"
+        phone_number = f"0300{random.randint(1000000, 9999999)}"
+        email = f"contact{i}@restaurant.com"
+        business_name = f"Business {i+1}"
 
-    for i in range(10):
         Restaurant.objects.create(
-            name=names[i],
-            address=addresses[i],
-            phone_number=phone_numbers[i],
-            web_url=emails[i],
-            bussiness_name=bussiness_names[i],
+            name=name,
+            address=address,
+            phone_number=phone_number,
+            web_url=email,
+            bussiness_name=business_name,
             longitude=random.uniform(-180, 180),
             latitude=random.uniform(-90, 90),
             profile_image=f"https://example.com/images/{i}.jpg",
+            ambience=random.choice(ambiences),
+            delivery=random.choice(deliveries),
+            preferences=random.choice(preferences),
         )
 
-    print("✅ 10 Restaurants created successfully!")
+    print("✅ Successfully created 50 random restaurants!")
