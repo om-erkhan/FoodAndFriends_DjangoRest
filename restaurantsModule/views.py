@@ -266,7 +266,7 @@ def save_spin_result(request, restaurant_id):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_spin_history(request):
+def get_spin_history_records(request):
     user = request.user
 
     if not user.is_authenticated:

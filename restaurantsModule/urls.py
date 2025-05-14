@@ -5,7 +5,7 @@ from .views import (
     update_or_delete_restaurant,
     get_questionaire_result,
     save_spin_result,
-    get_spin_history,
+    get_spin_history_records,
 )
 
 
@@ -13,7 +13,7 @@ urlpatterns = [
     path("restaurants/", get_restaurants),
     path("filter_restaurants/", get_questionaire_result),
     path("createrestaurants/", create_restaurant),
-    path("get_spin_history/", get_spin_history),
+    path("get_spin_history/", get_spin_history_records),
     path(
         "update_or_delete_restaurant/<int:restaurant_id>/", update_or_delete_restaurant
     ),
