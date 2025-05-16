@@ -263,7 +263,7 @@ def save_spin_result(request, restaurant_id):
         status=status.HTTP_201_CREATED,
     )
 
-
+# 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_spin_history_records(request):
