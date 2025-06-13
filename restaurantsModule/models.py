@@ -1,17 +1,4 @@
-# import uuid
-# from django.db import models
-
-
-# class Restaurant(models.Model):
-#     name = models.CharField(max_length=250)
-#     address = models.CharField(max_length=250)
-#     phone_number = models.CharField(max_length=15)
-#     web_url = models.EmailField()
-#     bussiness_name = models.CharField(max_length=250)
-#     longitude = models.DecimalField(max_digits=9, decimal_places=6, default=0.0)
-#     latitude = models.DecimalField(max_digits=9, decimal_places=6, default=0.0)
-#     profile_image = models.CharField(max_length=400, null=True, blank=True)
-
+ 
 
 from django.db import models
 
@@ -66,5 +53,8 @@ class SpinHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} spun and got {self.selected_restaurant.name}"
+    
+    
+    
 
  
