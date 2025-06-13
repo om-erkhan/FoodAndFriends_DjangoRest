@@ -176,7 +176,7 @@ def update_or_delete_restaurant(request, restaurant_id):
         )
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_questionaire_result(request):
     user = request.user
@@ -192,9 +192,9 @@ def get_questionaire_result(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    preferences = request.data.get("preferences")
-    delivery = request.data.get("delivery")
-    ambience = request.data.get("ambience")
+    preferences = request.query_params.get("preferences")
+    delivery = request.query_params.get("delivery")
+    ambience = request.query_params.get("ambience")
 
     filter_kwargs = {}
     if preferences:
@@ -263,7 +263,8 @@ def save_spin_result(request, restaurant_id):
         status=status.HTTP_201_CREATED,
     )
 
-# 
+
+#
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_spin_history_records(request):
