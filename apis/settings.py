@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 HASHID_FIELD_SALT = "ply2ZA4Q7vCyTd-6sQx4kgaPihhEw6Gynu8qeYIqHlw"
+# For mail service
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "omerkhan.dev1@gmail.com"
+EMAIL_HOST_PASSWORD = "igszallqhgevobek"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Application definition
 AUTH_USER_MODEL = "authApis.CustomUser"
@@ -69,7 +78,7 @@ ROOT_URLCONF = "apis.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

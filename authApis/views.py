@@ -7,6 +7,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .serializers import *
+from apis.utils import generate_otp, send_otp_email
+from authApis.models import OTPVerification
 
 
 @api_view(["POST"])
@@ -45,12 +47,58 @@ def login(request):
 STATIC_OTP = "0000"
 
 
+# @api_view(["POST"])
+# def signup(request):
+#     serializer = SignupSerializer(data=request.data)
+
+#     if serializer.is_valid():
+#         user = serializer.save()
+#         return Response(
+#             {
+#                 "status": {
+#                     "code": 201,
+#                     "success": True,
+#                 },
+#                 "data": {
+#                     "username": user.username,
+#                     "email": user.email,
+#                     "otp": "00000",
+#                 },
+#                 "error": None,
+#                 "message": "User registered successfully.",
+#             },
+#             status=status.HTTP_201_CREATED,
+#         )
+
+#     return Response(
+#         {
+#             "status": {
+#                 "code": 400,
+#                 "success": False,
+#             },
+#             "data": None,
+#             "error": serializer.errors,
+#             "message": "Signup failed.",
+#         },
+#         status=status.HTTP_400_BAD_REQUEST,
+#     )
+
+
 @api_view(["POST"])
 def signup(request):
     serializer = SignupSerializer(data=request.data)
 
     if serializer.is_valid():
         user = serializer.save()
+
+        # Generate and save OTP
+        otp = generate_otp()
+        OTPVerification.objects.filter(user=user).delete()
+        OTPVerification.objects.create(user=user, otp=otp)
+
+        # Send OTP to email
+        send_otp_email(user.email, otp)
+
         return Response(
             {
                 "status": {
@@ -60,10 +108,9 @@ def signup(request):
                 "data": {
                     "username": user.username,
                     "email": user.email,
-                    "otp": "00000",
                 },
                 "error": None,
-                "message": "User registered successfully.",
+                "message": "User registered successfully. OTP sent to email.",
             },
             status=status.HTTP_201_CREATED,
         )

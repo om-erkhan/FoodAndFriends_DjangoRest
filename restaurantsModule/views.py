@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .serializers import RestaurantSerializer, SpinHistorySerializer
 import math
-
 from authApis.models import CreateProfileModel
 
 
